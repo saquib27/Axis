@@ -1,0 +1,28 @@
+name = "axis-diff-explainer"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+NETWORK = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
+USDC_ASA_ID = "10458941"
+FACILITATOR_URL = "https://facilitator.goplausible.xyz"
+PAY_TO_DIFF = "3HDFJL3SN4LVLPBSEYOEB5IG3RMFRBOPX65W4P6WTE3ABE73RR6H2C34YI"
+
+# Secrets (wrangler secret put): NVIDIA_API_KEY
+
+# Replay-protection claim store (M3). Create once:
+#   npx wrangler kv namespace create AXIS_CLAIMS
+# then paste the returned id below.
+[[kv_namespaces]]
+binding = "AXIS_CLAIMS"
+id = "4e0238a762514b3b996c3d3c1776229f"
+
+# Linearizable replay-claim store (blocks concurrent replay — Attack II)
+[[durable_objects.bindings]]
+name = "CLAIM_DO"
+class_name = "ClaimDO"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ClaimDO"]

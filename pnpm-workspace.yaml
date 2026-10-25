@@ -1,0 +1,25 @@
+packages:
+  - "backend/shared"
+  - "backend/guard"
+  - "backend/router"
+  - "backend/sdk"
+  - "backend/mcp"
+  - "backend/agent"
+  - "backend/providers/*"
+  - "frontend/*"
+
+# These three ship native/postinstall build scripts. pnpm 10+ refuses to run
+# any dep's scripts unless it is allow-listed here, and in CI an unapproved
+# script is a hard install failure — which is what broke the first deploy.
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - workerd
+
+# A dep we have NOT approved should not take a deploy down. Warn, don't fail:
+# the frontend build needs none of these scripts to produce a working bundle.
+strictDepBuilds: false
+
+# Keep scripts from implicitly reinstalling dependencies.
+verifyDepsBeforeRun: false
+updateNotifier: false

@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "AXIS Live Monitor",
+  "version": "1.0.0",
+  "description": "Live-monitors the AXIS agent: N x402 API calls settled as ONE atomic Algorand group, streamed step by step in real time.",
+  "permissions": ["sidePanel", "storage"],
+  "host_permissions": [
+    "http://localhost:8080/*",
+    "http://127.0.0.1:8080/*",
+    "https://*/*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Open AXIS Live Monitor",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "side_panel": { "default_path": "panel.html" },
+  "background": { "service_worker": "background.js" }
+}

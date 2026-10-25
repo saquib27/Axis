@@ -1,0 +1,58 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# secrets — NEVER commit
+.env
+.env.*
+!.env.example
+*.mnemonic
+*.key
+accounts.json
+secrets/
+
+# build output
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# tooling caches
+.turbo/
+.wrangler/
+.vercel/
+coverage/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# generated testnet accounts — MNEMONICS, never commit
+**/.env.accounts
+.bundle/
+
+# wrangler local secrets
+**/.dev.vars
+.DS_Store
+
+# next build output
+.next/
+frontend/console/.next/
+
+# Local development database and downloaded runtime
+.local/
+.local-tools/
+
+# Original downloaded archive
+/backups/
+
+# Downloaded installers are not project source
+*.dmg

@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ADD COLUMN "api_key" text;

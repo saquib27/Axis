@@ -1,0 +1,29 @@
+{
+  "name": "@axis/router",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "dev": "node --watch src/index.ts",
+    "start": "node src/index.ts",
+    "test": "node --experimental-strip-types --experimental-test-module-mocks --test 'src/**/*.test.ts'",
+    "dev:local": "node src/local.ts"
+  },
+  "dependencies": {
+    "@axis/shared": "workspace:*",
+    "drizzle-orm": "^0.38.0",
+    "postgres": "^3.4.5",
+    "zod": "^3.24.2",
+    "hono": "^4.6.0",
+    "@hono/node-server": "^1.13.0",
+    "@axis/guard": "workspace:*"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.30.0",
+    "dotenv": "^16.4.7"
+  }
+}

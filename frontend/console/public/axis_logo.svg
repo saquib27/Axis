@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="100%" height="100%">
+    <!-- Minimalist VS Code-inspired AXIS Logo - Dark Theme Red -->
+    <defs>
+        <!-- Back Ribbon: Deep Ruby / Burgundy to sink into the dark background -->
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#B30000" />
+            <stop offset="100%" stop-color="#4D0000" />
+        </linearGradient>
+        
+        <!-- Front Ribbon: Vibrant Crimson / Bright Red to pop strongly on dark themes -->
+        <linearGradient id="grad2" x1="100%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#E60000" />
+            <stop offset="100%" stop-color="#FF4D4D" />
+        </linearGradient>
+
+        <!-- Sharp, minimalist drop shadow to create depth at the ribbon fold -->
+        <filter id="fold-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="-8" dy="12" stdDeviation="8" flood-color="#000000" flood-opacity="0.6" />
+        </filter>
+    </defs>
+
+    <!-- Transparent Background so it can be dropped perfectly into any UI -->
+    
+    <g>
+        <!-- Sleek stroke width (140) for perfect balance of negative space -->
+        
+        <!-- Back Layer: Left Leg & Crossbar -->
+        <path d="M 453 200 L 203 820 L 821 450" fill="none" stroke="url(#grad1)" stroke-width="140" stroke-linecap="round" stroke-linejoin="round" />
+        
+        <!-- Front Layer: Right Ribbon Fold -->
+        <path d="M 821 450 L 703 820 L 453 200" fill="none" stroke="url(#grad2)" stroke-width="140" stroke-linecap="round" stroke-linejoin="round" filter="url(#fold-shadow)" />
+    </g>
+</svg>

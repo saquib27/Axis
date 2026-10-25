@@ -1,0 +1,9 @@
+# Netlify + Next.js. Without the runtime plugin, Netlify publishes .next as a
+# folder of static files — there is no index.html at the root, so every URL
+# 404s. The plugin wires the App Router, SSR routes and image handling.
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

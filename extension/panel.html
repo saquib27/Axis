@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>AXIS Live Monitor</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --fg: #ededed; --muted: #7a7a7a; --faint: #545454;
+      --line: rgba(255,255,255,.12); --line-2: rgba(255,255,255,.07);
+      --on: rgba(255,255,255,.45);
+      --ok: #50e3c2; --warn: #f5a623; --bad: #d76b6b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--fg);
+      background:
+        radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px) 0 0 / 22px 22px,
+        #000000;
+      padding: 12px;
+    }
+    h1 { font-size: 14px; margin: 0; letter-spacing: 1px; font-weight: 800; }
+    .sub { color: var(--muted); font-size: 10px; margin: 2px 0 10px; }
+    .bar { display: flex; gap: 6px; align-items: center; margin-bottom: 10px; }
+    .bar input { flex: 1; min-width: 0; background: rgba(255,255,255,.04); border: 1px solid var(--line); color: var(--fg); padding: 5px 8px; border-radius: 7px; font: inherit; }
+    button { background: rgba(255,255,255,.06); border: 1px solid var(--line); color: var(--fg); padding: 5px 10px; border-radius: 7px; cursor: pointer; font: inherit; font-weight: 600; }
+    button:hover { background: rgba(255,255,255,.1); }
+    .status { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 10px; font-weight: 800; letter-spacing: .5px; }
+    .status.online, .status.running { background: rgba(255,255,255,.1); color: var(--fg); box-shadow: 0 0 12px rgba(255,255,255,.15); }
+    .status.SETTLED { background: rgba(80,227,194,.1); color: var(--ok); }
+    .status.PARTIAL { background: rgba(245,166,35,.1); color: var(--warn); }
+    .status.FAILED, .status.REVERSED, .status.reconnecting { background: rgba(215,107,107,.12); color: var(--bad); }
+    .status.idle, .status.offline, .status.no { background: rgba(255,255,255,.04); color: var(--muted); }
+    button.ghost { background: transparent; color: var(--muted); font-weight: 500; }
+    button.ghost:hover { background: rgba(255,255,255,.05); color: var(--fg); }
+
+    /* connect gate — the API key is the whole connection */
+    .gate {
+      border: 1px solid var(--line); border-radius: 12px; padding: 16px;
+      background: rgba(255,255,255,.02);
+    }
+    .gate-t { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .gate-s { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+    .gate-s b { color: var(--fg); }
+    .gate input {
+      width: 100%; background: rgba(255,255,255,.04); border: 1px solid var(--line);
+      color: var(--fg); padding: 8px 10px; border-radius: 8px; font: inherit; margin-bottom: 8px;
+    }
+    .gate input:focus { outline: none; border-color: var(--on); }
+    .gate > button { width: 100%; padding: 8px; }
+    .adv { margin-top: 12px; }
+    .adv summary {
+      cursor: pointer; font-size: 10px; color: var(--faint);
+      letter-spacing: .06em; text-transform: uppercase;
+    }
+    .adv input { margin-top: 8px; margin-bottom: 0; }
+
+    #scene { width: 100%; height: auto; display: block; }
+
+    /* nodes — monochrome by default. Only money and failure carry hue, so the
+       one thing worth spotting is the one thing that is coloured. */
+    .card { fill: rgba(255,255,255,.035); stroke: var(--line-2); stroke-width: .8; transition: stroke .35s, fill .35s; }
+    .card.active, .card.running { fill: rgba(255,255,255,.07); stroke: var(--on); }
+    .card.paid, .card.delivered { fill: rgba(80,227,194,.05); stroke: rgba(80,227,194,.45); }
+    .card.failed   { fill: rgba(215,107,107,.06); stroke: rgba(215,107,107,.5); }
+    .card.refunded { fill: rgba(245,166,35,.06); stroke: rgba(245,166,35,.5); }
+    .card.pass { stroke: rgba(80,227,194,.45); } .card.fail { stroke: rgba(215,107,107,.5); }
+    .card.unused { stroke: rgba(255,255,255,.05); fill: rgba(255,255,255,.012); }
+
+    /* Name in sans, sub-line in mono — the console's own vocabulary. */
+    .name { fill: var(--fg); font: 500 9.5px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .name.prov { font-size: 9.5px; }
+    .role { fill: var(--muted); font: 7.5px ui-monospace, monospace; }
+    .role.price { fill: var(--fg); }
+    .role.warn  { fill: var(--warn); }
+    .tag { fill: var(--faint); font: 7px ui-monospace, monospace; letter-spacing: .04em; }
+    .tag.ok   { fill: var(--ok); }
+    .tag.warn { fill: var(--warn); }
+    .tag.bad  { fill: var(--bad); }
+
+    /* the services panel */
+    .panel-box { fill: rgba(255,255,255,.012); stroke: rgba(255,255,255,.09); stroke-width: 1; stroke-dasharray: 4 4; }
+    .panel-lbl { fill: var(--faint); font: 7.5px ui-monospace, monospace; letter-spacing: .1em; }
+
+    /* edges — thin dashed wires, no arrowheads. Direction is carried by the
+       travelling dot rather than by a head, so a fan-out stays legible. */
+    .edge {
+      fill: none; stroke: var(--line-2); stroke-width: 1;
+      stroke-dasharray: 3 5; stroke-linecap: round;
+    }
+    .edge.active { stroke: rgba(255,255,255,.28); animation: dash 1.1s linear infinite; }
+    .edge.paid   { stroke: rgba(80,227,194,.42);  animation: dash 1.1s linear infinite; }
+    .edge.refund { stroke: rgba(245,166,35,.5);   animation: dashr 1.1s linear infinite; }
+    @keyframes dash  { to { stroke-dashoffset: -16; } }
+    @keyframes dashr { to { stroke-dashoffset: 16; } }
+
+    /* the dot that rides the wire */
+    .wire-dot { fill: #fff; filter: drop-shadow(0 0 3px rgba(255,255,255,.55)); }
+
+    .caption {
+      min-height: 40px; margin-top: 10px; padding: 9px 12px; font-size: 12px; color: var(--fg);
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line); border-radius: 10px;
+    }
+    .caption b { color: var(--fg); }
+    .caption .paid { color: var(--ok); }
+    .caption .warn { color: var(--warn); }
+
+    /* live backend terminal */
+    .term { margin-top: 10px; background: #000000; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    .term-head {
+      display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.03); color: var(--muted);
+      font-size: 10px; padding: 6px 10px; border-bottom: 1px solid var(--line-2); letter-spacing: .5px;
+    }
+    .term-head .dots { color: var(--faint); letter-spacing: 2px; }
+    .term-head .live { margin-left: auto; color: var(--ok); }
+    .term-head .live::before { content: "●"; margin-right: 4px; animation: blink 1.1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: .25; } }
+    .term-body { max-height: 172px; overflow-y: auto; padding: 8px 10px; font: 11px/1.55 ui-monospace, SFMono-Regular, monospace; }
+    .term-body .ln { white-space: pre-wrap; word-break: break-word; }
+    .term-body .ts { color: var(--faint); }
+    .term-body .ev { color: var(--fg); }
+    .term-body .ev.ok { color: var(--ok); } .term-body .ev.warn { color: var(--warn); } .term-body .ev.err { color: var(--bad); }
+    .term-body .dim { color: var(--muted); }
+    .term-body .money { color: var(--warn); font-weight: 600; }
+    .term-body .g { color: var(--ok); } .term-body .y { color: var(--warn); } .term-body .r { color: var(--bad); }
+    .term-body .empty { color: var(--faint); }
+  </style>
+</head>
+<body>
+  <h1>
+    <svg width="20" height="20" viewBox="0 0 1024 1024" style="vertical-align:-3px;margin-right:5px" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="axlogo1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#B30000"/><stop offset="100%" stop-color="#4D0000"/></linearGradient>
+        <linearGradient id="axlogo2" x1="100%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#E60000"/><stop offset="100%" stop-color="#FF4D4D"/></linearGradient>
+      </defs>
+      <path d="M 453 200 L 203 820 L 821 450" fill="none" stroke="url(#axlogo1)" stroke-width="140" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 821 450 L 703 820 L 453 200" fill="none" stroke="url(#axlogo2)" stroke-width="140" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>AXIS · Live Monitor</h1>
+  <div class="sub">N x402 calls → one atomic Algorand group → one signature</div>
+
+  <!-- Not connected: the API key is the only thing needed. -->
+  <div id="gate" class="gate">
+    <div class="gate-t">Connect with your API key</div>
+    <div class="gate-s">Console sidebar → under your email → <b>copy</b>. The panel then follows only your account's runs.</div>
+    <input id="apikey" placeholder="axis_…" autocomplete="off" spellcheck="false" />
+    <button id="save">connect</button>
+    <details class="adv">
+      <summary>advanced</summary>
+      <input id="router" placeholder="http://localhost:8080" />
+    </details>
+  </div>
+
+  <!-- Connected: the live scene. -->
+  <div id="stage" style="display:none">
+    <div class="bar">
+      <span id="conn" class="status offline">offline</span>
+      <button id="disconnect" class="ghost">disconnect</button>
+    </div>
+
+    <div id="demo-label" class="caption" style="display:none">DEMO · simulated amounts and events · no payments or provider calls</div>
+
+    <svg id="scene" viewBox="0 0 380 476" xmlns="http://www.w3.org/2000/svg" aria-label="AXIS payment flow"></svg>
+
+    <div id="caption" class="caption">Waiting for a run — start one in the console, or hand a task to Claude via MCP.</div>
+
+    <div class="term">
+      <div class="term-head"><span class="dots">● ● ●</span> axis@router — live backend tail <span class="live">streaming</span></div>
+      <div id="term-body" class="term-body"><div class="empty">no events yet — waiting for a run…</div></div>
+    </div>
+  </div>
+
+  <script src="panel.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+name = "axis-toolbox"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+NETWORK = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
+USDC_ASA_ID = "10458941"
+FACILITATOR_URL = "https://facilitator.goplausible.xyz"
+# Distinct, USDC-opted-in payout addresses — one per service — so a workflow
+# using several services settles as a genuine multi-payee atomic group.
+PAY_TO_TOOL_CODE = "6QN4BMCYVAWIKQFLUVKJZZAGLF5M4PFIRLCSSFPI2Y2CZRMY4GKGWNGL4A"
+PAY_TO_TOOL_DEBUG = "LZ3HX3R6XKZLA7S7IDHGJZGXGUWET6Q7YUIPI44FME3IGGZQ37Z2WNTHPU"
+PAY_TO_TOOL_TEST = "ISUZSLA25S3FMEPRJTUXSNCFRPUSN64WNBV5SSMKO4H5BYXP4FE3SJNVBQ"
+PAY_TO_TOOL_TRANSLATE = "TPGTHIRZUUWPISFQQXPS6Z62N3V4JSN7NSAKX43IX7S7WBVOHGBMKL6X6M"
+PAY_TO_TOOL_SUMMARIZE = "BD7BPTHK2KHSHYXC26KUGEVJV526WVPCJMLVFDOI37HLPA44BJE2237A2Y"
+
+# Secret (set with: wrangler secret put NVIDIA_API_KEY): NVIDIA_API_KEY
+
+# Linearizable single-use claim store (blocks concurrent replay — Attack II).
+[[durable_objects.bindings]]
+name = "CLAIM_DO"
+class_name = "ClaimDO"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ClaimDO"]

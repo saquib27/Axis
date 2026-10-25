@@ -1,0 +1,1 @@
+ALTER TABLE "runs" ALTER COLUMN "quote_id" DROP NOT NULL;

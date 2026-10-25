@@ -1,0 +1,35 @@
+{
+  "name": "axis",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.0.9",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "pnpm -r --if-present run build",
+    "dev": "pnpm -r --parallel --if-present run dev",
+    "test": "pnpm -r --if-present run test",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "lint": "pnpm -r --if-present run lint",
+    "spike": "node backend/scripts/spike-atomic-group.ts",
+    "accounts:new": "node backend/scripts/setup-accounts.ts",
+    "accounts:optin": "node backend/scripts/optin-usdc.ts",
+    "accounts:check": "node backend/scripts/check-accounts.ts",
+    "dev:db": "node scripts/local-db.mjs",
+    "dev:local-api": "node backend/router/src/local.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3",
+    "@cloudflare/workers-types": "^4.20250109.0"
+  },
+  "dependencies": {
+    "@algorandfoundation/algokit-utils": "10.0.0-alpha.46",
+    "@x402/avm": "2.21.0",
+    "@x402/core": "2.21.0",
+    "dotenv": "^16.4.7",
+    "zod": "^3.24.2"
+  }
+}

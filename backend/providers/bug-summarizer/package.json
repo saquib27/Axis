@@ -1,0 +1,16 @@
+{
+  "name": "@axis/provider-bug-summarizer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@axis/provider-kit": "workspace:*",
+    "hono": "^4.6.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": { "wrangler": "^4.0.0" }
+}

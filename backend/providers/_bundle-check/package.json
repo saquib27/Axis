@@ -1,0 +1,14 @@
+{
+  "name": "@axis/bundle-check",
+  "private": true,
+  "type": "module",
+  "scripts": { "check": "wrangler deploy --dry-run --outdir=.bundle" },
+  "devDependencies": { "wrangler": "^4.0.0" },
+  "dependencies": {
+    "@algorandfoundation/algokit-utils": "10.0.0-alpha.46",
+    "@x402/avm": "2.21.0",
+    "@x402/core": "2.21.0",
+    "@x402/hono": "2.21.0",
+    "hono": "^4.6.0"
+  }
+}

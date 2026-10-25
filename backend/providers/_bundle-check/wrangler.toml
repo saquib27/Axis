@@ -1,0 +1,11 @@
+name = "axis-bundle-check"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Replay-protection claim store (M3). Create once:
+#   npx wrangler kv namespace create AXIS_CLAIMS
+# then paste the returned id below.
+[[kv_namespaces]]
+binding = "AXIS_CLAIMS"
+id = ""

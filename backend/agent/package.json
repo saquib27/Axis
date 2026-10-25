@@ -1,0 +1,14 @@
+{
+  "name": "@axis/agent",
+  "version": "0.1.0",
+  "description": "Autonomous budgeted agent: given a goal and a USDC budget, it quotes and atomically pays x402 providers on its own, with the spend policy as a hard backstop.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "start": "node src/cli.ts"
+  },
+  "dependencies": {
+    "axis-pay": "workspace:*"
+  }
+}

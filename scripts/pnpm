@@ -1,0 +1,13 @@
+#!/bin/sh
+# Use this project's Node runtime and pinned pnpm without changing the system.
+set -eu
+PROJECT_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+NODE_BIN="$PROJECT_ROOT/.local-tools/node/bin"
+PNPM_CLI="$PROJECT_ROOT/.local-tools/pnpm/node_modules/pnpm/bin/pnpm.mjs"
+if [ ! -x "$NODE_BIN/node" ] || [ ! -f "$PNPM_CLI" ]; then
+  echo "Local tools are missing. See docs/RUN_LOCAL.md." >&2
+  exit 1
+fi
+export PATH="$NODE_BIN:$PROJECT_ROOT/.local-tools/pnpm/node_modules/.bin:$PATH"
+export XDG_DATA_HOME="$PROJECT_ROOT/.local-tools/data"
+exec "$NODE_BIN/node" "$PNPM_CLI" "$@"
